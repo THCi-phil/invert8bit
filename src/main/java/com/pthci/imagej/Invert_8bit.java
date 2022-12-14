@@ -4,6 +4,12 @@
  *
  * See the CC0 1.0 Universal license for details:
  *     http://creativecommons.org/publicdomain/zero/1.0/
+ *
+ * Invert 8 bit image code 2022 Prof Phil Threlfall-Holmes, TH Collaborative Innovation
+ * modification from tutorial template, licence terms unmodified.
+ *
+ * DEPRECATED use invert_image instead, which has this identical code,
+ * but also code for RAY8, GRAY16, GRAY32 or COLOR_RGB images.
  */
 
 package com.pthci.imagej;
@@ -11,15 +17,31 @@ package com.pthci.imagej;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
-//import ij.gui.GenericDialog;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageProcessor;
 
 /**
- * A template for processing each pixel of either
+ * True invert greyscale of 8-bit image.
+ *
+ * i.e. not just inverting LUT so the image appears black-on-white rather than white on black
+ * this re-writes the pixel values, so that 0 becomes 255, 1 becomes 254 etc.
+ *
+ * This is useful for numerical edge finding codes for thresholded images.
+ * Typically for a shadowgraph image, raw image has a black object of interest on a white background.
+ * or more normally in high speed imaging, a dark grey object on a light grey background.
+ * First step in image processing is normally finding the difference from a blank reference background
+ * image, to improve the signal to noise ratio, but the result of that difference is typically near 0
+ * where there is background in your image and near 255 where there is the shadowgraphed object of interest.
+ * i.e the image with the background difference removed, has become a white object on a black background.
+ * This is a pain if we sometimes have images where we remove the background, and sometimes don't,
+ * because we need 2 different versions of the numerical edsge finding code, one for black-on-white
+ * thresholds, one for white-on-black.
+ * Hence this code, so we can pre-process all images to the edge finding plugin code to be consistent.
+ *
+ * Based on Johannes Schindelin's template for processing each pixel of either
  * GRAY8, GRAY16, GRAY32 or COLOR_RGB images.
  *
- * @author Johannes Schindelin
+ * @author Phil Threlfall-Holmes
  */
 public class Invert_8bit implements PlugInFilter {
 	protected ImagePlus image;
